@@ -1,0 +1,7 @@
+users:
+  1234-uuid-5678:
+    username: MarkIsCool
+    mailbox:
+    - generated_id
+    createdmail:
+    - generated_id

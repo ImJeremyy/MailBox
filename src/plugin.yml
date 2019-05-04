@@ -1,0 +1,17 @@
+name: MailBox
+version: 1.0
+main: me.markiscool.mailbox.MailboxPlugin
+api-version: 1.13
+author: MarkIsCool
+description: TO FILL
+commands:
+  mail:
+    usage: /<command>
+    description: Base command - opens GUI
+    aliases: [mailbox]
+  mailfinished:
+    usage: /<command>
+    description: When you are done doing a task, run this command
+  mailseen:
+    usage: /<command>
+    description: Do not run this command, for button use only.
