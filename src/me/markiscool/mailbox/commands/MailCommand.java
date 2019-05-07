@@ -12,11 +12,9 @@ import org.bukkit.entity.Player;
 
 public class MailCommand implements CommandExecutor {
 
-    private MailboxPlugin plugin;
     private String prefix;
 
     public MailCommand(MailboxPlugin plugin) {
-        this.plugin = plugin;
         prefix = Lang.PREFIX.getMessage();
     }
 

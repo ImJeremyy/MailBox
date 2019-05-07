@@ -71,7 +71,7 @@ public class Items {
                 lore.add("&cand users who have not opened it will");
                 lore.add("&cno longer be able to open it..");
                 lore.add("&7" + mail.getId());
-                ItemStack paper = Items.generateItemStack(XMaterial.PAPER, 1, mail.getTitle() + " &6from " + Bukkit.getPlayer(mail.getCreator()).getName(), lore);
+                ItemStack paper = Items.generateItemStack(XMaterial.PAPER, 1, mail.getTitle() + " &6from " + Bukkit.getOfflinePlayer(mail.getCreator()).getName(), lore);
                 inv.setItem(j, paper);
             }
             for(int k = 46; k < 53; k++) {
@@ -102,6 +102,16 @@ public class Items {
             for(int j = 0; j < 45 && iterator.hasNext(); j++) {
                 Mail mail = iterator.next();
                 List<String> lore = new ArrayList<>(mail.getMessage());
+                lore.add("");
+                if(!mail.getRecipients().isEmpty()) {
+                    lore.add("&dRecipients:");
+                    for(UUID uuid : mail.getRecipients().keySet()) {
+                        String username = Bukkit.getOfflinePlayer(uuid).getName();
+                        lore.add("&f- &e" + username);
+                    }
+                } else {
+                    lore.add("&dRecipients: &eNone");
+                }
                 lore.add("");
                 lore.add("&dLEFT CLICK &e- Add lines");
                 lore.add("&dRIGHT CLICK &e- Remove last line");
@@ -139,7 +149,7 @@ public class Items {
             for(int j = 0; j < 45 && iterator.hasNext(); j++) {
                 UUID blockedUser = iterator.next();
                 List<String> lore = new ArrayList<>();
-                lore.add("&dSHIFT RIGHT CLICK &e- Delete to unblock this player");
+                lore.add("&dSHIFT RIGHT CLICK &e- Unblock this player");
                 OfflinePlayer blockedPlayer = Bukkit.getOfflinePlayer(blockedUser);
                 ItemStack head = Items.generatePlayerHead(blockedPlayer, 1, blockedPlayer.getName(), lore);
                 inv.setItem(j, head);
