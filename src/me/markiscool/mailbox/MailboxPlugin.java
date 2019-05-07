@@ -27,6 +27,7 @@ public class MailboxPlugin extends JavaPlugin {
         registerHandlers();
         registerCommands();
         registerListeners();
+        new MetricsLite(this);
     }
 
     @Override
