@@ -71,7 +71,7 @@ public class Items {
                 lore.add("&cand users who have not opened it will");
                 lore.add("&cno longer be able to open it..");
                 lore.add("&7" + mail.getId());
-                ItemStack paper = Items.generateItemStack(XMaterial.PAPER, 1, mail.getTitle() + " from &6" + Bukkit.getPlayer(mail.getCreator()).getName(), lore);
+                ItemStack paper = Items.generateItemStack(XMaterial.PAPER, 1, mail.getTitle() + " &6from " + Bukkit.getPlayer(mail.getCreator()).getName(), lore);
                 inv.setItem(j, paper);
             }
             for(int k = 46; k < 53; k++) {
@@ -130,17 +130,18 @@ public class Items {
     }
 
     public static Inventory[] generateBlocked(User user) {
-        Set<User> blocked = user.getBlockedUsers();
+        Set<UUID> blocked = user.getBlockedUsers();
         int pagesAmount = InvUtil.getPages(blocked.size());
         Inventory[] pages = new Inventory[pagesAmount];
         for(int i = 0; i < pagesAmount; i++) {
             Inventory inv = Bukkit.createInventory(null, 54, Chat.colourize("&fBlocked Players &6#" + (i + 1)));
-            Iterator<User> iterator = blocked.iterator();
+            Iterator<UUID> iterator = blocked.iterator();
             for(int j = 0; j < 45 && iterator.hasNext(); j++) {
-                User blockedUser = iterator.next();
+                UUID blockedUser = iterator.next();
                 List<String> lore = new ArrayList<>();
                 lore.add("&dSHIFT RIGHT CLICK &e- Delete to unblock this player");
-                ItemStack head = Items.generatePlayerHead(Bukkit.getOfflinePlayer(blockedUser.getUniqueId()), 1, blockedUser.getUsername(), lore);
+                OfflinePlayer blockedPlayer = Bukkit.getOfflinePlayer(blockedUser);
+                ItemStack head = Items.generatePlayerHead(blockedPlayer, 1, blockedPlayer.getName(), lore);
                 inv.setItem(j, head);
             }
             for(int k = 46; k < 53; k++) {

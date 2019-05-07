@@ -2,6 +2,7 @@ package me.markiscool.mailbox.listeners;
 
 import me.markiscool.mailbox.MailboxPlugin;
 import me.markiscool.mailbox.enums.Lang;
+import me.markiscool.mailbox.enums.Perm;
 import me.markiscool.mailbox.objecthandlers.UserHandler;
 import me.markiscool.mailbox.objects.Mail;
 import me.markiscool.mailbox.objects.Task;
@@ -13,6 +14,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,21 +59,25 @@ public class AsyncChatListener implements Listener {
                         User user = uh.getUser(message);
                         if (user != null) {
                             if(!mail.containsRecipient(user.getUniqueId())) {
-                                if(!user.containsBlockedUser(uh.getUser(player))) {
+                                if(!user.containsBlockedUser(player.getUniqueId())) {
                                     player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&aAdded &6" + user.getUsername() + "&a. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                                     mail.addRecipient(user.getUniqueId(), System.currentTimeMillis());
                                     user.addMail(mail);
+                                    Player userPlayer = Bukkit.getPlayer(user.getUniqueId());
+                                    if(userPlayer.isOnline() && userPlayer.hasPermission(Perm.MAIL)) {
+                                        userPlayer.sendMessage(prefix + Chat.colourize("&aYou received mail from &6" + player.getName() + "&a. Open it through /mail."));
+                                    }
                                 } else {
-                                    player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + "&cblocked you. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+                                    player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + " &cblocked you. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                                 }
                             } else {
-                                player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + " &aalready received this mail. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+                                player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + " &calready received this mail. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                             }
                         } else {
-                            player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + message + "&a was not found.. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+                            player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + message + "&c was not found.. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                         }
                     } else {
-                        player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&aYou cannot send that to yourself. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+                        player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&cYou cannot send that to yourself. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                     }
                     break;
                 case BLOCK:
@@ -79,8 +85,8 @@ public class AsyncChatListener implements Listener {
                         User user = uh.getUser(message);
                         if(user != null) {
                             User userPlayer = uh.getUser(player);
-                            if(!userPlayer.containsBlockedUser(user)) {
-                                userPlayer.block(user);
+                            if(!userPlayer.containsBlockedUser(user.getUniqueId())) {
+                                userPlayer.block(user.getUniqueId());
                                 player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&aBlocked &6" + user.getUsername() + " &aClick &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                             } else {
                                 player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + " &cis already blocked. &aClick &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));

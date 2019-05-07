@@ -89,6 +89,6 @@ public class MailboxPlugin extends JavaPlugin {
     }
 
     public long getDelay() {
-        return getConfig().getBoolean("debug-mode") ? 20 : 300;
+        return getConfig().getBoolean("debug-mode") ? 20 : 600;
     }
 }

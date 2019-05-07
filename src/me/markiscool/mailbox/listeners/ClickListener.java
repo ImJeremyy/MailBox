@@ -108,6 +108,7 @@ public class ClickListener implements Listener {
                                             break;
                                         case RIGHT:
                                             mail.getMessage().remove(mail.getMessage().size() - 1);
+                                            player.sendMessage(prefix + Chat.colourize("&aRemoved last line of mail with title: &6" + mail.getTitle()));
                                             User user = uh.getUser(player);
                                             Inventory[] yourMail = Items.generateYourMail(user);
                                             iph.remove(player);
@@ -125,6 +126,7 @@ public class ClickListener implements Listener {
                                             user = uh.getUser(player);
                                             user.removeCreatedMail(mail);
                                             mh.remove(mail);
+                                            player.sendMessage(prefix + Chat.colourize("&aRemoved mail with title: &6" + mail.getTitle()));
                                             for(User u : uh.getUsers()) {
                                                 if(u != user) {
                                                     u.getMailbox().remove(mail);
@@ -147,9 +149,15 @@ public class ClickListener implements Listener {
                             }
                         }
                     } else if(item.equals(Items.next)) {
-                        //TODO
+                        Inventory[] invs = iph.getInventories(player);
+                        int page = iph.getPage(player);
+                        iph.setPage(player, page + 1);
+                        player.openInventory(invs[page]);
                     } else if(item.equals(Items.last)) {
-                        //TODO
+                        Inventory[] invs = iph.getInventories(player);
+                        int page = iph.getPage(player);
+                        iph.setPage(player, page - 1);
+                        player.openInventory(invs[page - 2]);
                     }
                 } else if(invName.contains("Mailbox")) {
                     event.setCancelled(true);
@@ -167,7 +175,7 @@ public class ClickListener implements Listener {
                                         case LEFT:
                                             player.closeInventory();
                                             player.sendMessage("");
-                                            player.sendMessage(prefix + Chat.colourize("&Mail from &6" + sender.getUsername() + "&a."));
+                                            player.sendMessage(prefix + Chat.colourize("&aMail from &6" + sender.getUsername() + "&a."));
                                             player.sendMessage("");
                                             player.sendMessage(ChatColor.UNDERLINE + mail.getTitle());
                                             player.sendMessage("");
@@ -205,8 +213,8 @@ public class ClickListener implements Listener {
                     } else if(item.equals(Items.last)) {
                         Inventory[] invs = iph.getInventories(player);
                         int page = iph.getPage(player);
-                        iph.setPage(player, page - 1);
-                        player.openInventory(invs[page - 1]);
+                        iph.setPage(player, page);
+                        player.openInventory(invs[page - 2]);
                     }
                 } else if(invName.contains("Blocked Players")) {
                     event.setCancelled(true);
@@ -215,18 +223,25 @@ public class ClickListener implements Listener {
                         if (click.equals(ClickType.SHIFT_RIGHT)) {
                             User user = uh.getUser(Chat.strip(item.getItemMeta().getDisplayName()));
                             if(user != null) {
-                                uh.getUser(player).unblock(user);
+                                uh.getUser(player).unblock(user.getUniqueId());
                                 Inventory[] invs = Items.generateBlocked(user);
                                 int page = iph.getPage(player);
                                 player.closeInventory();
                                 player.openInventory(invs[page - 1]);
                                 iph.add(player, invs);
+                                player.sendMessage(prefix + Chat.colourize("&aUnblocked &6" + user.getUsername() + "&a."));
                             }
                         }
                     } else if(item.equals(Items.next)) {
-                        //TODO
+                        Inventory[] invs = iph.getInventories(player);
+                        int page = iph.getPage(player);
+                        iph.setPage(player, page + 1);
+                        player.openInventory(invs[page]);
                     } else if(item.equals(Items.last)) {
-                        //TODO
+                        Inventory[] invs = iph.getInventories(player);
+                        int page = iph.getPage(player);
+                        iph.setPage(player, page - 1);
+                        player.openInventory(invs[page - 2]);
                     }
                 }
             }

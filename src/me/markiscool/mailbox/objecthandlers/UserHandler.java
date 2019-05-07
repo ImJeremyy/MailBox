@@ -31,7 +31,6 @@ public class UserHandler {
         users = new HashSet<>();
         createFile();
         pull();
-        pullBlocked();
         registerPushRunnable(plugin, 40, plugin.getDelay());
     }
 
@@ -103,7 +102,14 @@ public class UserHandler {
     }
 
     public void register(final Player player) {
-        final User user = new User(player);
+        User user = null;
+        if(getUser(player.getUniqueId()) == null) {
+            user = new User(player);
+        } else {
+            user = getUser(player.getUniqueId());
+            remove(user);
+            user.setUsername(player.getName());
+        }
         add(user);
     }
 
@@ -131,23 +137,14 @@ public class UserHandler {
                     }
                 }
             }
-            add(user);
-        }
-    }
-
-    private void pullBlocked() {
-        final ConfigurationSection section = cfg.getConfigurationSection("users");
-        for(String uuid : section.getKeys(false)) {
-            User user = getUser(UUID.fromString(uuid));
-            final List<String> blockedStr = section.getStringList(uuid + ".blocked");
-            if (!blockedStr.isEmpty()) {
-                for (final String b : blockedStr) {
-                    User u = getUser(UUID.fromString(b));
-                    if (u != null) {
-                        user.block(u);
-                    }
+            final List<String> blocked = section.getStringList("blocked");
+            if(!blocked.isEmpty()) {
+                for(final String blockedUuid : blocked) {
+                    UUID u = UUID.fromString(blockedUuid);
+                    user.block(u);
                 }
             }
+            add(user);
         }
     }
 
@@ -159,7 +156,7 @@ public class UserHandler {
             final String username = user.getUsername();
             final Set<Mail> mailbox = user.getMailbox();
             final Set<Mail> createdMail = user.getCreatedMail();
-            final Set<User> blocked = user.getBlockedUsers();
+            final Set<UUID> blocked = user.getBlockedUsers();
             final List<String> mailboxStr = new ArrayList<>();
             final List<String> createdMailStr = new ArrayList<>();
             final List<String> blockedStr = new ArrayList<>();
@@ -169,8 +166,8 @@ public class UserHandler {
             for(final Mail mail : createdMail) {
                 createdMailStr.add(mail.getId());
             }
-            for(final User u : blocked) {
-                blockedStr.add(u.getUniqueId().toString());
+            for(final UUID u : blocked) {
+                blockedStr.add(u.toString());
             }
             final ConfigurationSection section = cfg.createSection("users." + uuid.toString());
             section.set("username", username);

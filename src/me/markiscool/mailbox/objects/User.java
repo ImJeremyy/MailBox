@@ -12,7 +12,7 @@ public class User {
     private String username;
     private Set<Mail> createdMail;
     private Set<Mail> mailbox;
-    private Set<User> blocked;
+    private Set<UUID> blocked;
 
     /**
      * Constructor is for creating new users entirely
@@ -71,19 +71,19 @@ public class User {
         return mailbox.remove(mail);
     }
 
-    public boolean block(final User userToBlock) {
-        return blocked.add(userToBlock);
+    public boolean block(final UUID uuid) {
+        return blocked.add(uuid);
     }
 
-    public boolean unblock(final User userToUnblock) {
-        return blocked.remove(userToUnblock);
+    public boolean unblock(final UUID uuid) {
+        return blocked.remove(uuid);
     }
 
-    public boolean containsBlockedUser(final User user) {
-        return blocked.contains(user);
+    public boolean containsBlockedUser(final UUID uuid) {
+        return blocked.contains(uuid);
     }
 
-    public Set<User> getBlockedUsers() {
+    public Set<UUID> getBlockedUsers() {
         return blocked;
     }
 
