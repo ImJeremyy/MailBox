@@ -66,7 +66,10 @@ public class Items {
                 List<String> lore = new ArrayList<>();
                 lore.add("");
                 lore.add("&dLEFT CLICK &e- View");
-                lore.add("&dSHIFT RIGHT CLICK &e- Mark as read");
+                if(mail.hasItem()) {
+                    lore.add("&dRIGHT CLICk &e- Receive item");
+                }
+                lore.add("&dSNEAK RIGHT CLICK &e- Mark as read");
                 lore.add("&cWARNING: Marking as read will delete it");
                 lore.add("&cand users who have not opened it will");
                 lore.add("&cno longer be able to open it..");
@@ -112,11 +115,18 @@ public class Items {
                 } else {
                     lore.add("&dRecipients: &eNone");
                 }
+                if(mail.hasItem()) {
+                    lore.add("&dItem: &e" + mail.getItem().getType().name());
+                } else {
+                    lore.add("&dItem: &eNone");
+                }
                 lore.add("");
                 lore.add("&dLEFT CLICK &e- Add lines");
                 lore.add("&dRIGHT CLICK &e- Remove last line");
-                lore.add("&dSHIFT LEFT CLICK &e- Send to players");
-                lore.add("&dSHIFT RIGHT CLICK &e- Delete this mail");
+                lore.add("&dDROP &e- Add item");
+                lore.add("&dSNEAK LEFT CLICK &e- Send to players");
+                lore.add("&dSNEAK RIGHT CLICK &e- Delete this mail");
+                lore.add("&dCONTROL DROP &e- Delete item");
                 lore.add(Chat.colourize("&7" + mail.getId()));
                 ItemStack paper = Items.generateItemStack(XMaterial.PAPER, 1, mail.getTitle(), lore);
                 inv.setItem(j, paper);

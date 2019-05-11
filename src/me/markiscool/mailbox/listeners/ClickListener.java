@@ -17,6 +17,7 @@ import me.markiscool.mailbox.utility.TextComponentUtil;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -111,11 +112,8 @@ public class ClickListener implements Listener {
                                             player.sendMessage(prefix + Chat.colourize("&aRemoved last line of mail with title: &6" + mail.getTitle()));
                                             User user = uh.getUser(player);
                                             Inventory[] yourMail = Items.generateYourMail(user);
-                                            iph.remove(player);
-                                            if (yourMail.length != 0) {
-                                                iph.add(player, yourMail);
-                                                player.openInventory(yourMail[iph.getPage(player) - 1]);
-                                            }
+                                            player.closeInventory();
+                                            updateInventory(player, yourMail);
                                             break;
                                         case SHIFT_LEFT:
                                             player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&aEnter the players you would like to send this mail to. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
@@ -141,6 +139,29 @@ public class ClickListener implements Listener {
                                                 player.sendMessage(prefix + Lang.CREATED_MAIL_EMPTY.getMessage());
                                             }
                                             break;
+                                        case DROP:
+                                            if(!mail.hasItem()) {
+                                                player.closeInventory();
+                                                th.add(player, new Task(Task.Job.ITEM, mail));
+                                                player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&aClick &7<DONE> &awhen you have the item in your hand, or hold air to cancel.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+
+                                            } else {
+                                                player.sendMessage(prefix + Chat.colourize("&cThis mail already has an item. Delete it first."));
+                                            }
+                                            break;
+                                        case CONTROL_DROP:
+                                            player.sendMessage(prefix + Chat.colourize("&aRemoved item from mail with title: &6" + mail.getTitle()));
+                                            item = mail.getItem();
+                                            mail.setItem(null);
+                                            if(player.getInventory().firstEmpty() != -1) {
+                                                player.getInventory().addItem(item);
+                                            } else {
+                                                player.getLocation().getWorld().dropItem(player.getLocation().add(0, 1, 0), item);
+                                            }
+                                            user = uh.getUser(player);
+                                            yourMail = Items.generateYourMail(user);
+                                            updateInventory(player, yourMail);
+                                            break;
                                     }
                                 } else {
                                     player.sendMessage(prefix + Chat.colourize("&cThis mail does not exist."));
@@ -149,15 +170,9 @@ public class ClickListener implements Listener {
                             }
                         }
                     } else if(item.equals(Items.next)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page + 1);
-                        player.openInventory(invs[page]);
+                        nextPage(player);
                     } else if(item.equals(Items.last)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page - 1);
-                        player.openInventory(invs[page - 2]);
+                        lastPage(player);
                     }
                 } else if(invName.contains("Mailbox")) {
                     event.setCancelled(true);
@@ -186,17 +201,22 @@ public class ClickListener implements Listener {
                                             player.sendMessage(Chat.colourize("&aMail sent on &6" + new Date(mail.getTimestamp(uh.getUser(player).getUniqueId()))));
                                             player.sendMessage("");
                                             break;
+                                        case RIGHT:
+                                            if(mail.hasItem()) {
+                                                if (!mail.hasReceivedItem(player)) {
+                                                    mail.addReceivedItemRepient(player);
+                                                    player.getInventory().addItem(mail.getItem());
+                                                    updateInventory(player, Items.generateMailbox(uh.getUser(player)));
+                                                } else {
+                                                    player.sendMessage(prefix + Chat.colourize("&cYou already received this item.")); //TODO Lang
+                                                }
+                                            }
+                                            break;
                                         case SHIFT_RIGHT:
                                             User user = uh.getUser(player);
                                             user.removeMail(mail);
                                             Inventory[] mailbox = Items.generateMailbox(user);
-                                            player.closeInventory();
-                                            if (mailbox.length != 0) {
-                                                player.openInventory(mailbox[0]);
-                                                iph.add(player, mailbox);
-                                            } else {
-                                                player.sendMessage(prefix + Lang.MAILBOX_EMPTY.getMessage());
-                                            }
+                                            updateInventory(player, mailbox);
                                             break;
                                     }
                                 } else {
@@ -206,46 +226,67 @@ public class ClickListener implements Listener {
                             }
                         }
                     } else if(item.equals(Items.next)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page + 1);
-                        player.openInventory(invs[page - 1]);
+                        nextPage(player);
                     } else if(item.equals(Items.last)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page);
-                        player.openInventory(invs[page - 2]);
+                        lastPage(player);
                     }
                 } else if(invName.contains("Blocked Players")) {
                     event.setCancelled(true);
                     if(item != null && item.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) && item.hasItemMeta()) {
                         ClickType click = event.getClick();
                         if (click.equals(ClickType.SHIFT_RIGHT)) {
-                            User user = uh.getUser(Chat.strip(item.getItemMeta().getDisplayName()));
-                            if(user != null) {
-                                uh.getUser(player).unblock(user.getUniqueId());
-                                Inventory[] invs = Items.generateBlocked(user);
-                                int page = iph.getPage(player);
-                                player.closeInventory();
-                                player.openInventory(invs[page - 1]);
-                                iph.add(player, invs);
-                                player.sendMessage(prefix + Chat.colourize("&aUnblocked &6" + user.getUsername() + "&a."));
+                            User userToUnblock = uh.getUser(Chat.strip(item.getItemMeta().getDisplayName()));
+                            if(userToUnblock != null) {
+                                User playerUser = uh.getUser(player);
+                                playerUser.unblock(userToUnblock.getUniqueId());
+                                Inventory[] invs = Items.generateBlocked(userToUnblock);
+                                updateInventory(player, invs);
+                                player.sendMessage(prefix + Chat.colourize("&aUnblocked &6" + userToUnblock.getUsername() + "&a."));
                             }
                         }
                     } else if(item.equals(Items.next)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page + 1);
-                        player.openInventory(invs[page]);
+                        nextPage(player);
                     } else if(item.equals(Items.last)) {
-                        Inventory[] invs = iph.getInventories(player);
-                        int page = iph.getPage(player);
-                        iph.setPage(player, page - 1);
-                        player.openInventory(invs[page - 2]);
+                        lastPage(player);
                     }
                 }
             }
         }
     }
+
+    /**
+     * Updates GUI, closes it then re opens it with the given Inventory[].
+     * @param player Player to update GUI
+     * @param inventories See Items#generateYourMail and Items#generateMailbox
+     */
+    private void updateInventory(Player player, Inventory[] inventories) {
+        int page = iph.getPage(player);
+        player.closeInventory();
+        player.openInventory(inventories[page - 1]);
+        iph.add(player, inventories);
+    }
+
+    /**
+     * Goes to the next page of the GUI
+     * @param player player to change
+     */
+    private void nextPage(Player player) {
+        Inventory[] invs = iph.getInventories(player);
+        int page = iph.getPage(player);
+        iph.setPage(player, page + 1);
+        player.openInventory(invs[page]);
+    }
+
+    /**
+     * Goes to the previous page of the GUI
+     * @param player player to change
+     */
+    private void lastPage(Player player) {
+        Inventory[] invs = iph.getInventories(player);
+        int page = iph.getPage(player);
+        iph.setPage(player, page - 1);
+        player.openInventory(invs[page - 2]);
+    }
+
 
 }

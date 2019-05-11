@@ -1,5 +1,5 @@
 name: MailBox
-version: 1.02
+version: 1.1
 main: me.markiscool.mailbox.MailboxPlugin
 api-version: 1.13
 author: MarkIsCool

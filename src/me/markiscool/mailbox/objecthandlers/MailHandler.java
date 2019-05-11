@@ -11,10 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class MailHandler {
 
@@ -64,12 +61,19 @@ public class MailHandler {
             sec.set("message", mail.getMessage());
             sec.set("creator", mail.getCreator().toString());
             sec.createSection("recipients");
+            List<String> receivedItemRecipients = new ArrayList<>();
+            sec.set("receiveditemrecipients", receivedItemRecipients);
             final ConfigurationSection recipientsSec = sec.getConfigurationSection("recipients");
             for(final Map.Entry<UUID, Long> entry : mail.getRecipients().entrySet()) {
                 final UUID uuid = entry.getKey();
                 final long timestamp = entry.getValue();
                 recipientsSec.set(uuid.toString(), timestamp);
             }
+            for(final UUID uuid : mail.getReceivedItemRecipients()) {
+                receivedItemRecipients.add(uuid.toString());
+            }
+            sec.set("receiveditemrecipients", receivedItemRecipients);
+            sec.set("item", mail.getItem());
         }
         saveConfig();
     }

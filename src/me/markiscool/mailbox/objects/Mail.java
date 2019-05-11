@@ -1,6 +1,8 @@
 package me.markiscool.mailbox.objects;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -12,6 +14,9 @@ public class Mail {
 
     private UUID creator;
     private Map<UUID, Long> recipients;
+    private Set<UUID> receivedItemRecipients;
+
+    private ItemStack item;
 
     public Mail(String id, final ConfigurationSection cfgsection) {
         this.id = id;
@@ -19,12 +24,18 @@ public class Mail {
         this.message = cfgsection.getStringList("message");
         this.creator = UUID.fromString(cfgsection.getString("creator"));
         this.recipients = new HashMap<>();
+        this.receivedItemRecipients = new HashSet<>();
         final ConfigurationSection recipientsSec = cfgsection.getConfigurationSection("recipients");
-        for(String u : recipientsSec.getKeys(false)) {
-            UUID uuid = UUID.fromString(u);
-            long timeStamp = recipientsSec.getLong(u);
+        for(final String u : recipientsSec.getKeys(false)) {
+            final UUID uuid = UUID.fromString(u);
+            final long timeStamp = recipientsSec.getLong(u);
             recipients.put(uuid, timeStamp);
         }
+        for(final String u : cfgsection.getStringList("receiveditemrecipients")) {
+            final UUID uuid = UUID.fromString(u);
+            receivedItemRecipients.add(uuid);
+        }
+        item = cfgsection.getItemStack("item");
     }
 
     public Mail(String id, UUID creator) {
@@ -33,6 +44,7 @@ public class Mail {
         this.message = new ArrayList<>();
         this.creator = creator;
         this.recipients = new HashMap<>();
+        this.receivedItemRecipients = new HashSet<>();
     }
 
     public String getId() {
@@ -85,6 +97,30 @@ public class Mail {
 
     public long getTimestamp(UUID uuid) {
         return recipients.get(uuid);
+    }
+
+    public ItemStack getItem() {
+        return item;
+    }
+
+    public void setItem(ItemStack item) {
+        this.item = item;
+    }
+
+    public boolean hasItem() {
+        return item != null;
+    }
+
+    public void addReceivedItemRepient(Player player) {
+        this.receivedItemRecipients.add(player.getUniqueId());
+    }
+
+    public boolean hasReceivedItem(Player player) {
+        return receivedItemRecipients.contains(player.getUniqueId());
+    }
+
+    public Set<UUID> getReceivedItemRecipients() {
+        return receivedItemRecipients;
     }
 
 }

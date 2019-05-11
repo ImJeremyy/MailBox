@@ -23,7 +23,7 @@ public class Task {
     }
 
     public enum Job {
-        TITLE, MESSAGES, SEND, BLOCK,
+        TITLE, MESSAGES, SEND, BLOCK, ITEM,
         ;
     }
 
