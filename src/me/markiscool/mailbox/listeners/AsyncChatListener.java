@@ -78,7 +78,7 @@ public class AsyncChatListener implements Listener {
                                 player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + user.getUsername() + " &calready received this mail. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                             }
                         } else {
-                            player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + message + "&c was not found.. Click &7<DONE> &aor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
+                            player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&6" + message + "&c was not found.. Click &7<DONE> &cor continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
                         }
                     } else {
                         player.spigot().sendMessage(TextComponentUtil.generateTextComponent(prefix + "&cYou cannot send that to yourself. Click &7<DONE> or continue.", HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GRAY + "Click me when you are done."), ClickEvent.Action.RUN_COMMAND, "/mailfinished"));
