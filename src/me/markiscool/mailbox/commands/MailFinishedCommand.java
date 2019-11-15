@@ -18,11 +18,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Finishes a Task through the task handler.
+ * This command is meant to be used through the chat button (<DONE>)
+ * and will finish the Task they are currently assigned to through the TaskHandler.
+ */
 public class MailFinishedCommand implements CommandExecutor {
 
     private MailHandler mh;
     private UserHandler uh;
     private TaskHandler th;
+
     private String prefix;
 
     public MailFinishedCommand(MailboxPlugin plugin) {

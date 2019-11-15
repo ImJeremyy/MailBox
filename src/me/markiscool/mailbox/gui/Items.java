@@ -14,6 +14,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 
+/**
+ * Contains static methods and variables pertaining to
+ * generating ItemStacks, contains pre-made ItemStacks, Inventory GUIs,
+ */
 public class Items {
 
     public static ItemStack blank;
@@ -26,6 +30,9 @@ public class Items {
 
     public static Inventory mainmenu;
 
+    /**
+     * Static constructor, initalizes all public static ItemStack variables
+     */
     static {
         blank = generateItemStack(XMaterial.WHITE_STAINED_GLASS_PANE, 1, "&f-", null);
         block = generateItemStack(XMaterial.BARRIER, 1, "&bBlock a player", Arrays.asList("&eClick me to block a player"));
@@ -37,6 +44,14 @@ public class Items {
         generateMainMenu();
     }
 
+    /**
+     * Generate an item stack
+     * @param xmaterial XMaterial enum
+     * @param amount amount of the item (1-64)
+     * @param displayName String name of the item (colourized using & symbol)
+     * @param lore (Use Arrays.asList, also is colourized using & symbol)
+     * @return ItemStack object
+     */
     public static ItemStack generateItemStack(XMaterial xmaterial, int amount, String displayName, List<String> lore) {
         ItemStack item = new ItemStack(xmaterial.parseMaterial(), amount);
         ItemMeta meta = item.getItemMeta();
@@ -46,6 +61,14 @@ public class Items {
         return item;
     }
 
+    /**
+     * Generate a player head ItemStack
+     * @param player OfflinePlayer
+     * @param amount 1-64
+     * @param displayName String colourized (&)
+     * @param lore Use Arrays.asList() also colourized (&)
+     * @return ItemStack player skull - with skin
+     */
     public static ItemStack generatePlayerHead(OfflinePlayer player, int amount, String displayName, List<String> lore) {
         ItemStack head = generateItemStack(XMaterial.PLAYER_HEAD, amount, displayName, lore);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -54,6 +77,11 @@ public class Items {
         return head;
     }
 
+    /**
+     * Generates GUIs and is supposed to be stored in InventoryPageHandler
+     * @param user  User object of the player
+     * @return Array of Inventory objects containing their received mail.
+     */
     public static Inventory[] generateMailbox(User user) {
         Set<Mail> mailbox = user.getMailbox();
         int pagesAmount = InvUtil.getPages(mailbox.size());
@@ -95,6 +123,11 @@ public class Items {
         return pages;
     }
 
+    /**
+     * Generate GUI of their created mail
+     * @param user User object of the player
+     * @return Array of Inventorys, commonly stored in InventoryPageHandler
+     */
     public static Inventory[] generateYourMail(User user) {
         Set<Mail> yourMail = user.getCreatedMail();
         int pagesAmount = InvUtil.getPages(yourMail.size());
@@ -149,6 +182,11 @@ public class Items {
         return pages;
     }
 
+    /**
+     * Generates blocked players GUI
+     * @param user User object of the player
+     * @return Array of inventories
+     */
     public static Inventory[] generateBlocked(User user) {
         Set<UUID> blocked = user.getBlockedUsers();
         int pagesAmount = InvUtil.getPages(blocked.size());
@@ -182,11 +220,21 @@ public class Items {
         return pages;
     }
 
+    /**
+     * Generates their personalized main menu (with their player head)
+     * Commonly used like: player.openInventory(Items.getMainMenu(player));
+     * @param player Player object
+     * @return Inventory object
+     */
     public static Inventory getMainMenu(Player player) {
         mainmenu.setItem(10, generatePlayerHead(player, 1, "&bBlocked Players", Arrays.asList("&eClick me to view your blocked players", "&eYou may unblock players here as well.")));
         return mainmenu;
     }
 
+    /**
+     * Generates the main menu, in the static constructor.
+     * Private method
+     */
     private static void generateMainMenu() {
         mainmenu = Bukkit.createInventory(null, 27, Chat.colourize("&fMailbox &rby MarkIsCool"));
         for(int i = 0; i < mainmenu.getSize(); i++) {

@@ -7,6 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+/**
+ * Removes them from InventoryPageHandler when they leave the server
+ * to clear cache.
+ */
 public class InventoryCloseListener implements Listener {
 
     private InventoryPageHandler iph;

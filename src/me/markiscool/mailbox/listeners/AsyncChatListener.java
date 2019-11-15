@@ -21,6 +21,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+/**
+ * Listens for player chat and cancels it and stores the
+ * data depending on what task they are accomplishing.
+ */
 public class AsyncChatListener implements Listener {
 
     private TaskHandler th;

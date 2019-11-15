@@ -27,6 +27,10 @@ import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Class by Hex_27 to organize Material objects and
+ * to offer a better cross-version experience.
+ */
 public enum XMaterial {
     ACACIA_BOAT(0, "BOAT_ACACIA"),
     ACACIA_BUTTON(0, "WOOD_BUTTON"),

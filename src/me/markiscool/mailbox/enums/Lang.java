@@ -2,6 +2,9 @@ package me.markiscool.mailbox.enums;
 
 import me.markiscool.mailbox.utility.Chat;
 
+/**
+ * Contains common phrases
+ */
 public enum Lang {
 
     PREFIX("&6[&bMailbox&6]&r "),

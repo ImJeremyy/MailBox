@@ -3,6 +3,9 @@ package me.markiscool.mailbox.enums;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+/**
+ * Contains permissions
+ */
 public class Perm {
 
     public static Permission MAIL;

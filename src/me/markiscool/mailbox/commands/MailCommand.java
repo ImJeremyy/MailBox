@@ -10,6 +10,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * When user types in /mail (mailbox.mail)
+ * Open Main Menu from Items.java, and plays a sound.
+ */
 public class MailCommand implements CommandExecutor {
 
     private String prefix;
